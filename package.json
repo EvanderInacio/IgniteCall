@@ -17,6 +17,7 @@
     "@types/react-dom": "18.2.7",
     "axios": "^1.5.0",
     "next": "13.4.13",
+    "nookies": "^2.5.2",
     "phosphor-react": "^1.4.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -25,6 +26,7 @@
     "zod": "^3.22.2"
   },
   "devDependencies": {
+    "@types/cookie": "^0.5.1",
     "prisma": "^5.2.0"
   }
 }
