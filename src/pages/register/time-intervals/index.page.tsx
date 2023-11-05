@@ -1,4 +1,4 @@
-import { useFieldArray, useForm } from 'react-hook-form'
+import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import {
   Button,
@@ -26,6 +26,7 @@ export default function TimeIntervals() {
     register,
     handleSubmit,
     control,
+    watch,
     formState: { isSubmitted, errors }
   } = useForm({
     defaultValues: {
@@ -36,21 +37,21 @@ export default function TimeIntervals() {
         { weekDay: 3, enabled: true, startTime: '08:00', endTime: '18:00' },
         { weekDay: 4, enabled: true, startTime: '08:00', endTime: '18:00' },
         { weekDay: 5, enabled: true, startTime: '08:00', endTime: '18:00' },
-        { weekDay: 6, enabled: false, startTime: '08:00', endTime: '18:00' },
-      ],
-    },
+        { weekDay: 6, enabled: false, startTime: '08:00', endTime: '18:00' }
+      ]
+    }
   })
 
   const weekDays = getWeekDays()
 
   const { fields } = useFieldArray({
     control,
-    name: 'intervals',
+    name: 'intervals'
   })
 
-  async function handleSetTimeIntervals() {
+  const intervals = watch('intervals')
 
-  }
+  async function handleSetTimeIntervals() {}
 
   return (
     <Container>
@@ -64,27 +65,42 @@ export default function TimeIntervals() {
         <MultiStep size={4} currentStep={3} />
       </Header>
 
-      <IntervalBox as="form" onSubmit={handleSubmit(handleSetTimeIntervals)} >
+      <IntervalBox as="form" onSubmit={handleSubmit(handleSetTimeIntervals)}>
         <IntervalContainer>
           {fields.map((field, index) => {
             return (
               <IntervalItem key={field.id}>
                 <IntervalDay>
-                  <Checkbox />
+                  <Controller
+                    name={`intervals.${index}.enabled`}
+                    control={control}
+                    render={({ field }) => {
+                      return (
+                        <Checkbox
+                          onCheckedChange={(checked: boolean) => {
+                            field.onChange(checked === true)
+                          }}
+                          checked={field.value}
+                        />
+                      )
+                    }}
+                  />
                   <Text>{weekDays[field.weekDay]}</Text>
                 </IntervalDay>
                 <IntervalInputs>
-                  <TextInput 
-                    size="sm" 
-                    type="time" 
-                    step={60} 
-                    {...register(`intervals.${index}.startTime`)} 
+                  <TextInput
+                    size="sm"
+                    type="time"
+                    step={60}
+                    disabled={intervals[index].enabled === false}
+                    {...register(`intervals.${index}.startTime`)}
                   />
-                  <TextInput 
-                    size="sm" 
-                    type="time" 
-                    step={60} 
-                    {...register(`intervals.${index}.endTime`)} 
+                  <TextInput
+                    size="sm"
+                    type="time"
+                    step={60}
+                    disabled={intervals[index].enabled === false}
+                    {...register(`intervals.${index}.endTime`)}
                   />
                 </IntervalInputs>
               </IntervalItem>
